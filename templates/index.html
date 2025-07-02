@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GreenShield AI</title>
+  <link href="https://fonts.googleapis.com/css?family=Pacifico|Arimo|Hind:300|Open+Sans+Condensed:300" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css">
+  <script>
+    function validateForm() {
+      // Get form values
+      const nitrogen = document.forms["predictionForm"]["Nitrogen"].value;
+      const phosphorus = document.forms["predictionForm"]["Phosphorus"].value;
+      const potassium = document.forms["predictionForm"]["Potassium"].value;
+      const temperature = document.forms["predictionForm"]["temperature"].value;
+      const humidity = document.forms["predictionForm"]["humidity"].value;
+      const pH = document.forms["predictionForm"]["pH"].value;
+      const rainfall = document.forms["predictionForm"]["rainfall"].value;
+      const totalLand = document.forms["predictionForm"]["total_land"].value;
+      const mainCropLand = document.forms["predictionForm"]["main_crop_land"].value;
+      
+      // Check if any value is less than or equal to 0
+      const fields = [nitrogen, phosphorus, potassium, temperature, humidity, pH, rainfall, totalLand, mainCropLand];
+      for (let i = 0; i < fields.length; i++) {
+        if (isNaN(fields[i]) || fields[i] <= 0 || fields[i] > 1000) {
+          alert("Please enter a valid number greater than 0 and less than 1000.");
+          return false;
+        }
+      }
+
+      return true; // Form is valid
+    }
+  </script>
+</head>
+<body>
+
+  <div class="login">
+    <h1>Crop & Profit Predictor</h1>
+
+    <!-- Form for input values -->
+    <form name="predictionForm" action="{{ url_for('predict') }}" method="post" onsubmit="return validateForm()">
+      <input type="number" name="Nitrogen" placeholder="Nitrogen (N)" required="required" min="0.1" step="any" />
+      <input type="number" name="Phosphorus" placeholder="Phosphorus (P)" required="required" min="0.1" step="any" />
+      <input type="number" name="Potassium" placeholder="Potassium (K)" required="required" min="0.1" step="any" />
+      <input type="number" name="temperature" placeholder="Temperature (°C)" required="required" min="0.1" step="any" />
+      <input type="number" name="humidity" placeholder="Humidity (%)" required="required" min="0.1" step="any" />
+      <input type="number" name="pH" placeholder="Soil pH" required="required" min="0.1" step="any" />
+      <input type="number" name="rainfall" placeholder="Rainfall (mm)" required="required" min="0.1" step="any" />
+      
+      <!-- New fields for profitability prediction -->
+      <input type="number" name="total_land" placeholder="Total Land (hectares)" required="required" min="0.1" step="any" />
+      <input type="number" name="main_crop_land" placeholder="Main Crop Land (hectares)" required="required" min="0.1" step="any" />
+
+      <button type="submit" class="btn btn-primary btn-block btn-large">Predict</button>
+    </form>
+
+   <!-- Display Predictions -->
+   {% if prediction_text %}
+   <div class="output">
+     <h2>Prediction Result:</h2>
+     {% for line in prediction_text.split('\n') %}
+       <p>{{ line }}</p>
+     {% endfor %}
+   </div>
+   {% endif %}
+
+  </div>
+
+</body>
+</html>
